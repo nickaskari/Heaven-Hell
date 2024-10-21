@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heaven or Hell</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js"></script>
+</head>
+<body>
+
+  <!-- Background particles -->
+  <div id="particles-js"></div>
+
+  <!-- Landing Page -->
+  <div id="landing-page" class="fade-in">
+    <h1 id="main-title">Heaven or Hell</h1>
+    <button id="start-game-btn">Start Game</button>
+    <button id="leaderboard-btn">Leaderboard</button>
+  </div>
+
+  <!-- Quiz Section -->
+  <div id="quiz-section" style="display:none;">
+    <div id="question-container">
+      <p id="question-text"></p>
+      <div>
+        <button id="yes-btn">Yes</button>
+        <button id="no-btn">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Section -->
+  <div id="result-section" style="display:none;">
+    <h2 id="result-message"></h2>
+  </div>
+
+  <!-- Name Input Section (shown after game) -->
+  <div id="name-input-section" style="display:none;">
+    <h2>Enter your name to add to the leaderboard</h2>
+    <form id="name-form">
+      <input type="text" id="player-name" required>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <!-- Leaderboard Section -->
+  <div id="leaderboard-section" style="display:none;">
+    <h2>Leaderboard</h2>
+    <table id="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-list">
+        <!-- Player results will be listed here -->
+      </tbody>
+    </table>
+    <button id="back-to-home-btn">Back to Home</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
