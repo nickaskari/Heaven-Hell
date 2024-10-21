@@ -3,11 +3,11 @@ let currentQuestion = 0;
 const totalQuestions = 5;
 let playerName = "";
 const questions = [
-  { question: "Do you prefer to help others?", answers: ["Yes", "No"] },
+  { question: "Is Mathias a battyboy", answers: ["Yes", "No"] },
   { question: "Is breaking the rules fun?", answers: ["Yes", "No"] },
   { question: "Do you think of yourself as powerful?", answers: ["Yes", "No"] },
   { question: "Do you enjoy chaos?", answers: ["Yes", "No"] },
-  { question: "Would you rule with fear?", answers: ["Yes", "No"] }
+  { question: "Diddy?", answers: ["Yes", "No"] }
 ];
 
 // Sound effects using Howler.js
