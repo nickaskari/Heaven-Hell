@@ -2,12 +2,13 @@ let evilScore = 0;
 let currentQuestion = 0;
 const totalQuestions = 5;
 let playerName = "";
+let countdownInterval = null;
 const questions = [
-  { question: "Is Mathias a battyboy", answers: ["Yes", "No"] },
+  { question: "Do you eat kids?", answers: ["Yes", "No"] },
   { question: "Is breaking the rules fun?", answers: ["Yes", "No"] },
-  { question: "Do you think of yourself as powerful?", answers: ["Yes", "No"] },
-  { question: "Do you enjoy chaos?", answers: ["Yes", "No"] },
-  { question: "Diddy?", answers: ["Yes", "No"] }
+  { question: "Diddy do it?", answers: ["Yes", "No"] },
+  { question: "Would you rather poop nails or poop bricks?", answers: ["Yes", "No"] },
+  { question: "Do you often use the phrase: Now its demon time!! ", answers: ["Yes", "No"] }
 ];
 
 // Sound effects using Howler.js
@@ -22,10 +23,27 @@ const backgroundMusic = new Howl({
   volume: 0.2
 });
 
+// Intense countdown music and alarm sound
+const countdownMusic = new Howl({
+  src: ['https://freesound.org/data/previews/75/75599_634166-lq.mp3'],  // Add your intense music URL here
+  loop: true,
+  volume: 0.3
+});
+
+const alarmSound = new Howl({
+  src: ['https://www.soundjay.com/button/beep-07.wav'],  // Example alarm sound from a public domain
+  loop: true,
+  volume: 0.5
+});
+
+// Password to reset leaderboard (change this as needed)
+const resetPassword = "hellandheaven";
+
 // Landing page buttons
 const startGameBtn = document.getElementById('start-game-btn');
 const leaderboardBtn = document.getElementById('leaderboard-btn');
 const backToHomeBtn = document.getElementById('back-to-home-btn');
+const resetLeaderboardBtn = document.getElementById('reset-leaderboard-btn');
 
 // Sections
 const landingPage = document.getElementById('landing-page');
@@ -33,6 +51,10 @@ const quizSection = document.getElementById('quiz-section');
 const resultSection = document.getElementById('result-section');
 const leaderboardSection = document.getElementById('leaderboard-section');
 const nameInputSection = document.getElementById('name-input-section');
+const countdownSection = document.createElement('div');  // Countdown element for drink challenge
+countdownSection.id = 'countdown-section';
+countdownSection.style.display = 'none';
+quizSection.appendChild(countdownSection);
 
 // Question elements
 const questionText = document.getElementById('question-text');
@@ -42,6 +64,9 @@ const noBtn = document.getElementById('no-btn');
 // Name input form
 const nameForm = document.getElementById('name-form');
 const playerNameInput = document.getElementById('player-name');
+
+// Load leaderboard from local storage when the page loads
+window.onload = loadLeaderboard;
 
 // Start Game
 startGameBtn.addEventListener('click', function() {
@@ -69,11 +94,23 @@ backToHomeBtn.addEventListener('click', function() {
   backgroundMusic.stop(); // Stop background music
 });
 
+// Reset Leaderboard Button with password prompt inside leaderboard section
+resetLeaderboardBtn.addEventListener('click', function() {
+  const enteredPassword = prompt("Enter the password to reset the leaderboard:");
+  if (enteredPassword === resetPassword) {
+    resetLeaderboard();
+    alert("Leaderboard has been reset.");
+  } else {
+    alert("Incorrect password.");
+  }
+});
+
 // Name Submission
 nameForm.addEventListener('submit', function(event) {
   event.preventDefault();
   playerName = playerNameInput.value;
   addToLeaderboard(playerName, evilScore);
+  saveLeaderboard();  // Save the leaderboard to local storage
   fadeOut(nameInputSection, 500);
   setTimeout(() => fadeIn(leaderboardSection, 500), 500);
 });
@@ -86,6 +123,12 @@ function loadQuestion() {
     // Only animate the button that was clicked
     yesBtn.onclick = () => handleAnswer("Yes", yesBtn);
     noBtn.onclick = () => handleAnswer("No", noBtn);
+
+    // Randomly trigger a drink countdown during the quiz
+    if (Math.random() < 0.2) {  // 30% chance to trigger countdown
+      triggerCountdown();
+    }
+
   } else {
     displayResult();
   }
@@ -102,6 +145,33 @@ function handleAnswer(answer, clickedButton) {
 
   // Immediately load the next question without any bounce effect
   loadQuestion();
+}
+
+// Trigger a countdown during the quiz for the user to "chug their drink"
+function triggerCountdown() {
+  countdownSection.style.display = 'flex';  // Show countdown section
+  countdownSection.classList.add('urgent');  // Add urgent styling
+  let countdown = 10;  // Countdown from 10 seconds
+
+  // Pause background music and play countdown music + alarm sound
+  backgroundMusic.pause();
+  countdownMusic.play();
+  alarmSound.play();
+
+  countdownSection.innerHTML = `<h2>Chug your drink or you'll go to hell in <span id="countdown-timer">${countdown}</span> seconds!</h2>`;
+
+  countdownInterval = setInterval(() => {
+    countdown--;
+    document.getElementById('countdown-timer').textContent = countdown;
+
+    if (countdown <= 0) {
+      clearInterval(countdownInterval);  // Stop countdown
+      countdownSection.style.display = 'none';  // Hide countdown
+      countdownMusic.stop();
+      alarmSound.stop();
+      backgroundMusic.play();  // Resume background music
+    }
+  }, 1000);  // 1-second intervals for countdown
 }
 
 // Display the final result and prompt name input
@@ -142,6 +212,36 @@ function addToLeaderboard(name, score) {
   leaderboard.appendChild(playerEntry);
 }
 
+// Save leaderboard to local storage
+function saveLeaderboard() {
+  const leaderboard = document.getElementById('leaderboard-list');
+  const rows = leaderboard.getElementsByTagName('tr');
+  const leaderboardData = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const name = rows[i].getElementsByTagName('td')[0].textContent;
+    const score = rows[i].getElementsByTagName('td')[1].textContent;
+    leaderboardData.push({ name, score });
+  }
+
+  localStorage.setItem('leaderboard', JSON.stringify(leaderboardData));
+}
+
+// Load leaderboard from local storage
+function loadLeaderboard() {
+  const savedLeaderboard = localStorage.getItem('leaderboard');
+  if (savedLeaderboard) {
+    const leaderboardData = JSON.parse(savedLeaderboard);
+    leaderboardData.forEach(entry => addToLeaderboard(entry.name, entry.score));
+  }
+}
+
+// Reset leaderboard
+function resetLeaderboard() {
+  localStorage.removeItem('leaderboard');
+  document.getElementById('leaderboard-list').innerHTML = '';
+}
+
 // Reset the game when "Start Game" is pressed
 function resetGame() {
   evilScore = 0;
@@ -151,6 +251,11 @@ function resetGame() {
   quizSection.style.display = 'none';
   resultSection.style.display = 'none';
   nameInputSection.style.display = 'none';
+  countdownSection.style.display = 'none';  // Hide countdown on game reset
+  clearInterval(countdownInterval);  // Clear any ongoing countdown
+  countdownMusic.stop();
+  alarmSound.stop();
+  backgroundMusic.stop();  // Stop any music
 }
 
 // Fade-in and fade-out transitions

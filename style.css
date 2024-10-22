@@ -74,14 +74,29 @@ button:hover {
   background-color: #ff6600;
 }
 
-/* Fade-in animation for transitions */
-.fade-in {
-  animation: fadeIn 1s ease-in-out;
+/* Countdown Section */
+#countdown-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 80px;
+  z-index: 100;
+  text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+  animation: urgent 1s infinite;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Urgent animation for countdown */
+@keyframes urgent {
+  0% { transform: scale(1); color: #ff0000; }
+  50% { transform: scale(1.1); color: #ff4500; }
+  100% { transform: scale(1); color: #ff0000; }
 }
 
 /* Particles container for background effect */
