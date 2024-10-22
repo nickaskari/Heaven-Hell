@@ -31,13 +31,13 @@ const countdownMusic = new Howl({
 });
 
 const alarmSound = new Howl({
-  src: ['https://www.soundjay.com/button/beep-07.wav'],  // Example alarm sound from a public domain
+  src: ['https://actions.google.com/sounds/v1/alarms/spaceship_alarm.ogg'],  // Google public domain alarm sound
   loop: true,
   volume: 0.5
 });
 
 // Password to reset leaderboard (change this as needed)
-const resetPassword = "hellandheaven";
+const resetPassword = "bro";
 
 // Landing page buttons
 const startGameBtn = document.getElementById('start-game-btn');
@@ -195,7 +195,6 @@ function displayResult() {
   }, 500);  // Faster transition into result section
 }
 
-// Add result to leaderboard
 function addToLeaderboard(name, score) {
   const leaderboard = document.getElementById('leaderboard-list');
   const playerEntry = document.createElement('tr');
@@ -204,13 +203,14 @@ function addToLeaderboard(name, score) {
   nameCell.textContent = name;
   
   const scoreCell = document.createElement('td');
-  scoreCell.textContent = score + " points";
+  scoreCell.textContent = score + " points";  // Ensure score is saved correctly
   
   playerEntry.appendChild(nameCell);
   playerEntry.appendChild(scoreCell);
   
   leaderboard.appendChild(playerEntry);
 }
+
 
 // Save leaderboard to local storage
 function saveLeaderboard() {
@@ -227,14 +227,23 @@ function saveLeaderboard() {
   localStorage.setItem('leaderboard', JSON.stringify(leaderboardData));
 }
 
-// Load leaderboard from local storage
 function loadLeaderboard() {
   const savedLeaderboard = localStorage.getItem('leaderboard');
   if (savedLeaderboard) {
     const leaderboardData = JSON.parse(savedLeaderboard);
+
+    // Sort the leaderboard data by score in descending order
+    leaderboardData.sort((a, b) => {
+      const scoreA = parseInt(a.score);  // Convert score to integer
+      const scoreB = parseInt(b.score);  // Convert score to integer
+      return scoreB - scoreA;  // Descending order
+    });
+
+    // Display sorted leaderboard
     leaderboardData.forEach(entry => addToLeaderboard(entry.name, entry.score));
   }
 }
+
 
 // Reset leaderboard
 function resetLeaderboard() {
