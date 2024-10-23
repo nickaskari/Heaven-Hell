@@ -64,6 +64,38 @@
     <button id="reset-leaderboard-btn">Reset Leaderboard</button> <!-- Reset leaderboard button inside leaderboard section -->
   </div>
 
+  <div id="jumpscare-section" style="display:none;">
+    <img id="jumpscare-image" src="./jumpscare.jpg" alt="Jumpscare" />
+  </div>  
+
+  <!-- Hidden video stream and canvas for picture capture -->
+<div id="picture-section" style="display:none;">
+  <video id="player-video" autoplay></video>
+  <canvas id="snapshot-canvas" style="display:none;"></canvas>
+</div>
+
+<!-- Button to access the picture gallery -->
+<button id="view-pictures-btn">View Jumpscare Pictures</button>
+
+<!-- Picture gallery section -->
+<div id="pictures-gallery" style="display:none;">
+  <h2>Jumpscare Pictures</h2>
+  <div id="pictures-list"></div>
+  <button id="back-to-home-from-pictures">Back to Home</button>
+</div>
+
+<!-- Start menu -->
+<div id="landing-page" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+  <!-- Gallery button at the top left corner -->
+  <button id="gallery-btn" style="position: absolute; top: 10px; left: 10px;">Gallery</button>
+
+  <h1 id="main-title">Heaven or Hell</h1>
+  <button id="start-game-btn">Start Game</button>
+  <button id="leaderboard-btn">Leaderboard</button>
+</div>
+
+
+
   <script src="script.js"></script>
 </body>
 </html>

@@ -124,15 +124,18 @@ function loadQuestion() {
     yesBtn.onclick = () => handleAnswer("Yes", yesBtn);
     noBtn.onclick = () => handleAnswer("No", noBtn);
 
-    // Randomly trigger a drink countdown during the quiz
-    if (Math.random() < 0.2) {  // 30% chance to trigger countdown
-      triggerCountdown();
+    // Randomly trigger a drink countdown or jumpscare during the quiz
+    if (Math.random() < 0.3) {
+      triggerCountdown();  // 30% chance for countdown
+    } else {
+      randomJumpscare();  // Additional chance for jumpscare
     }
 
   } else {
     displayResult();
   }
 }
+
 
 // Handle Yes/No answers and press-in effect
 function handleAnswer(answer, clickedButton) {
@@ -344,4 +347,139 @@ particlesJS("particles-js", {
     }
   },
   "retina_detect": true
+});
+
+let jumpscareSound;  // Declare the sound variable
+
+// Load the sound and set it to start 5 seconds before it ends
+jumpscareSound = new Howl({
+  src: ['./scarysound.mp3'],  // Ensure the sound file is in the root directory
+  volume: 1,
+  onload: function() {
+    const duration = jumpscareSound.duration();  // Get the duration of the sound
+    const startTime = Math.max(0, duration - 8);  // Start 5 seconds before the end
+    jumpscareSound.seek(startTime);  // Seek to that point
+  }
+});
+
+
+
+// Function to trigger the jumpscare
+function triggerJumpscare() {
+  const jumpscareSection = document.getElementById('jumpscare-section');
+
+  // Show jumpscare image
+  jumpscareSection.style.display = 'flex';
+
+  // Play jumpscare sound
+  jumpscareSound.play();
+
+  // Capture picture after jumpscare starts
+  setTimeout(() => {
+    capturePicture();  // Capture the picture after the jumpscare
+    jumpscareSection.style.display = 'none';
+  }, 2000);  // Adjust the time for how long the jumpscare lasts
+}
+
+
+
+// Randomly trigger jumpscare during the game
+function randomJumpscare() {
+  if (Math.random() < 0.2) {  // 20% chance to trigger jumpscare
+    triggerJumpscare();
+  }
+}
+
+const video = document.getElementById('player-video');
+const canvas = document.getElementById('snapshot-canvas');
+
+// Initialize webcam
+function startWebcam() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(error => {
+      console.error("Error accessing the camera:", error);
+    });
+}
+
+// Capture image and store it
+function capturePicture() {
+  const context = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert the captured image to a base64 string
+  const imageData = canvas.toDataURL('image/png');
+
+  // Save the picture
+  savePicture(imageData);
+}
+
+// Save picture to localStorage
+function savePicture(imageData) {
+  let pictures = JSON.parse(localStorage.getItem('jumpscarePictures')) || [];
+  pictures.push({ image: imageData });
+  localStorage.setItem('jumpscarePictures', JSON.stringify(pictures));
+}
+
+const picturesList = document.getElementById('pictures-list');
+const viewPicturesBtn = document.getElementById('view-pictures-btn');
+const picturesGallery = document.getElementById('pictures-gallery');
+const backToHomeFromPictures = document.getElementById('back-to-home-from-pictures');
+
+// Load and display pictures
+function loadPictures() {
+  const pictures = JSON.parse(localStorage.getItem('jumpscarePictures')) || [];
+
+  picturesList.innerHTML = '';  // Clear previous pictures
+
+  pictures.forEach(picture => {
+    const img = document.createElement('img');
+    img.src = picture.image;
+    img.alt = 'Jumpscare Picture';
+    img.style.width = '200px';  // Resize image as needed
+    img.style.margin = '10px';
+    picturesList.appendChild(img);
+  });
+}
+
+// Show picture gallery when "View Jumpscare Pictures" is clicked
+viewPicturesBtn.addEventListener('click', function() {
+  fadeOut(landingPage, 500);
+  setTimeout(() => {
+    fadeIn(picturesGallery, 500);
+    loadPictures();  // Load pictures when the gallery is opened
+  }, 500);
+});
+
+
+// Back to home button on picture gallery
+backToHomeFromPictures.addEventListener('click', function() {
+  fadeOut(picturesGallery, 500);
+  setTimeout(() => fadeIn(landingPage, 500), 500);  // Return to the main menu
+});
+
+
+startGameBtn.addEventListener('click', function() {
+  resetGame();
+  startWebcam();  // Start the webcam when the game starts
+  fadeOut(landingPage, 500);
+  setTimeout(() => {
+    fadeIn(quizSection, 500);
+    loadQuestion();
+  }, 500);
+});
+
+const galleryBtn = document.getElementById('gallery-btn');
+
+// Show the gallery when the "Gallery" button is clicked
+galleryBtn.addEventListener('click', function() {
+  fadeOut(landingPage, 500);  // Hide the start menu
+  setTimeout(() => {
+    fadeIn(picturesGallery, 500);  // Show the gallery
+    loadPictures();  // Load pictures when the gallery is opened
+  }, 500);
 });
